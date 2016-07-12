@@ -1,7 +1,12 @@
 package edu.sofia.fmi.audiorec.database.model;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
 public class SearchHash {
 	
+	@Id
 	private long hash;
 	private long songId;
 	public SearchHash(long hash, long songId) {
