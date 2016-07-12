@@ -15,7 +15,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = { "edu.sofia.fmi.audiorec.database.persistence" })
 @ComponentScan(basePackages = { "edu.sofia.fmi.audiorec" })
 @PropertySource("classpath:oracle.properties")
-public abstract class AppConfiguration extends AbstractMongoConfiguration {
+public abstract class AppConfiguration { //extends AbstractMongoConfiguration {
 
     @Value("${mongo.database.name}")
     private String mongoDbName;
@@ -29,7 +29,7 @@ public abstract class AppConfiguration extends AbstractMongoConfiguration {
     @Value("classpath:${mongeez.config}")
     private Resource mongeezConfig;
 
-    @Override
+    //@Override
     protected String getDatabaseName() {
         return mongoDbName;
     }
@@ -39,37 +39,37 @@ public abstract class AppConfiguration extends AbstractMongoConfiguration {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
-    @Override
-    @Bean
-    public Mongo mongo() throws Exception {
-        MongoClient mongo = new MongoClient(new ServerAddress(mongoDbHost,
-                mongoDbPort));
-        return mongo;
-    }
+//    @Override
+//    @Bean
+//    public Mongo mongo() throws Exception {
+//        MongoClient mongo = new MongoClient(new ServerAddress(mongoDbHost,
+//                mongoDbPort));
+//        return mongo;
+//    }
 
-    @Bean
-    @DependsOn("mongo")
-    public MongeezRunner mongeez() throws Exception {
-        MongeezRunner mongeez = new MongeezRunner();
-        mongeez.setMongo(mongo());
-        mongeez.setExecuteEnabled(true);
-        mongeez.setDbName(mongoDbName);
-        mongeez.setFile(mongeezConfig);
-        return mongeez;
-    }
+//    @Bean
+//    @DependsOn("mongo")
+//    public MongeezRunner mongeez() throws Exception {
+//        MongeezRunner mongeez = new MongeezRunner();
+//        mongeez.setMongo(mongo());
+//        mongeez.setExecuteEnabled(true);
+//        mongeez.setDbName(mongoDbName);
+//        mongeez.setFile(mongeezConfig);
+//        return mongeez;
+//    }
 
     // Application beans
 
-    @Bean
-    @Autowired
-    public QuestionService questionService(QuestionRepository questionRepository) {
-        return new DefaultQuestionService(questionRepository);
-    }
-
-    @Bean
-    @Autowired
-    public AuthorService authorService(AuthorRepository authorRepository) {
-        return new DefaultAuthorService(authorRepository);
-    }
+//    @Bean
+//    @Autowired
+//    public QuestionService questionService(QuestionRepository questionRepository) {
+//        return new DefaultQuestionService(questionRepository);
+//    }
+//
+//    @Bean
+//    @Autowired
+//    public AuthorService authorService(AuthorRepository authorRepository) {
+//        return new DefaultAuthorService(authorRepository);
+//    }
 
 }
