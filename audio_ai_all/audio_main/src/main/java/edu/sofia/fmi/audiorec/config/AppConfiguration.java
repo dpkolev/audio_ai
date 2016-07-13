@@ -1,75 +1,94 @@
 package edu.sofia.fmi.audiorec.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import java.util.Properties;
+
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+
+import org.hibernate.ejb.HibernatePersistence;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.io.Resource;
+import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.web.servlet.view.JstlView;
+import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 @Configuration
-@EnableJpaRepositories(basePackages = { "edu.sofia.fmi.audiorec.database.persistence" })
-@ComponentScan(basePackages = { "edu.sofia.fmi.audiorec" })
+@ComponentScan(basePackages = {"edu.sofia.fmi.audiorec"})
 @PropertySource("classpath:oracle.properties")
-public abstract class AppConfiguration { //extends AbstractMongoConfiguration {
+@EnableJpaRepositories(basePackages = {"edu.sofia.fmi.audiorec.database.persistence"})
+public abstract class AppConfiguration {
 
-    @Value("${mongo.database.name}")
-    private String mongoDbName;
+	private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
+	private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
+	private static final String PROPERTY_NAME_DATABASE_URL = "db.url";
+	private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
 
-    @Value("${mongo.database.host}")
-    private String mongoDbHost;
+	private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
+	private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
+	private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
 
-    @Value("${mongo.database.port}")
-    private int mongoDbPort;
+	@Resource
+	private Environment env;
 
-    @Value("classpath:${mongeez.config}")
-    private Resource mongeezConfig;
+	@Bean
+	public DataSource dataSource() {
+		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-    //@Override
-    protected String getDatabaseName() {
-        return mongoDbName;
-    }
+		dataSource.setDriverClassName(
+				env.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
+		dataSource.setUrl(env.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+		dataSource.setUsername(
+				env.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
+		dataSource.setPassword(
+				env.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
 
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
-    }
+		return dataSource;
+	}
 
-//    @Override
-//    @Bean
-//    public Mongo mongo() throws Exception {
-//        MongoClient mongo = new MongoClient(new ServerAddress(mongoDbHost,
-//                mongoDbPort));
-//        return mongo;
-//    }
+	@Bean
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+		entityManagerFactoryBean.setDataSource(dataSource());
+		entityManagerFactoryBean
+				.setPersistenceProviderClass(HibernatePersistence.class);
+		entityManagerFactoryBean.setPackagesToScan(env.getRequiredProperty(
+				PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
 
-//    @Bean
-//    @DependsOn("mongo")
-//    public MongeezRunner mongeez() throws Exception {
-//        MongeezRunner mongeez = new MongeezRunner();
-//        mongeez.setMongo(mongo());
-//        mongeez.setExecuteEnabled(true);
-//        mongeez.setDbName(mongoDbName);
-//        mongeez.setFile(mongeezConfig);
-//        return mongeez;
-//    }
+		entityManagerFactoryBean.setJpaProperties(hibProperties());
 
-    // Application beans
+		return entityManagerFactoryBean;
+	}
 
-//    @Bean
-//    @Autowired
-//    public QuestionService questionService(QuestionRepository questionRepository) {
-//        return new DefaultQuestionService(questionRepository);
-//    }
-//
-//    @Bean
-//    @Autowired
-//    public AuthorService authorService(AuthorRepository authorRepository) {
-//        return new DefaultAuthorService(authorRepository);
-//    }
+	private Properties hibProperties() {
+		Properties properties = new Properties();
+		properties.put(PROPERTY_NAME_HIBERNATE_DIALECT,
+				env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT));
+		properties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL,
+				env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL));
+		return properties;
+	}
+
+	@Bean
+	public JpaTransactionManager transactionManager() {
+		JpaTransactionManager transactionManager = new JpaTransactionManager();
+		transactionManager
+				.setEntityManagerFactory(entityManagerFactory().getObject());
+		return transactionManager;
+	}
+
+	@Bean
+	public UrlBasedViewResolver setupViewResolver() {
+		UrlBasedViewResolver resolver = new UrlBasedViewResolver();
+		resolver.setPrefix("/WEB-INF/pages/");
+		resolver.setSuffix(".jsp");
+		resolver.setViewClass(JstlView.class);
+		return resolver;
+	}
 
 }
