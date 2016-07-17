@@ -21,7 +21,8 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 @Configuration
 @ComponentScan(basePackages = {"edu.sofia.fmi.audiorec"})
 @PropertySource("classpath:oracle.properties")
-@EnableJpaRepositories(basePackages = {"edu.sofia.fmi.audiorec.database.persistence"})
+@EnableJpaRepositories(basePackages = {
+		"edu.sofia.fmi.audiorec.database.persistence.impl"})
 public abstract class AppConfiguration {
 
 	private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
@@ -82,13 +83,13 @@ public abstract class AppConfiguration {
 		return transactionManager;
 	}
 
-	@Bean
-	public UrlBasedViewResolver setupViewResolver() {
-		UrlBasedViewResolver resolver = new UrlBasedViewResolver();
-		resolver.setPrefix("/WEB-INF/pages/");
-		resolver.setSuffix(".jsp");
-		resolver.setViewClass(JstlView.class);
-		return resolver;
-	}
+	// @Bean
+	// public UrlBasedViewResolver setupViewResolver() {
+	// UrlBasedViewResolver resolver = new UrlBasedViewResolver();
+	// resolver.setPrefix("/WEB-INF/pages/");
+	// resolver.setSuffix(".jsp");
+	// resolver.setViewClass(JstlView.class);
+	// return resolver;
+	// }
 
 }
