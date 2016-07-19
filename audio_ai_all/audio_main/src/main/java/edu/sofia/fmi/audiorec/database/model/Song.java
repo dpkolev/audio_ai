@@ -3,6 +3,8 @@ package edu.sofia.fmi.audiorec.database.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.json.JSONObject;
+
 @Entity
 public class Song {
 
@@ -58,11 +60,6 @@ public class Song {
 
 	@Override
 	public String toString() {
-		return new StringBuilder()
-				.append("ID: ").append(this.id)
-				.append(" |name: ").append(this.name)
-				.append(" |artist: ").append(this.artist)
-				.append(" |location: ").append(this.location)
-				.toString();
+		return new JSONObject(this).toString();
 	}
 }

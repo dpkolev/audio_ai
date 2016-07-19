@@ -3,10 +3,11 @@ package edu.sofia.fmi.audiorec.database.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.json.JSONObject;
+
 @Entity
 public class SearchHash {
 	
-	@Id
 	private long hash;
 	private long songId;
 	public SearchHash(long hash, long songId) {
@@ -37,9 +38,6 @@ public class SearchHash {
 	
 	@Override
 	public String toString() {
-		return new StringBuilder()
-				.append("Hash: ").append(this.hash)
-				.append(" |Song Id: ").append(this.songId)
-				.toString();
+		return new JSONObject(this).toString();
 	}
 }
