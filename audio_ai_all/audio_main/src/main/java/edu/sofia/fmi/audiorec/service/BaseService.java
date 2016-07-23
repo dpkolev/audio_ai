@@ -39,5 +39,9 @@ public interface BaseService<T> {
      * @return The updated entity from the repository.
      */
     T update(T entity) throws Exception;
+    
+    void delete(T entity) throws Exception;
+    
+    void delete(long id) throws Exception;
 
 }

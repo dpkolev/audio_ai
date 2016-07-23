@@ -31,4 +31,12 @@ public class DefaultSongServiceImpl extends BaseServiceImpl<Song>
 		return songRepository.update(s.getId(), s.getArtist(), s.getName(), s.getLocation());
 	}
 
+	public void delete(Song entity) throws Exception {
+		songRepository.delete(entity);
+	}
+
+	public void delete(long id) throws Exception {
+		songRepository.delete(id);
+	}
+	
 }

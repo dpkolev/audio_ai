@@ -24,6 +24,10 @@ public class DefaultSearchHashServiceImpl extends BaseServiceImpl<SearchHash>
 		return searchHashRepository.findAll();
 	}
 
+	public List<SearchHash> findBySongId(long songId) {
+		return searchHashRepository.findBySongId(songId);
+	}	
+	
 	public SearchHash save(SearchHash entity) {
 		return searchHashRepository.save(entity);
 	}
@@ -41,11 +45,9 @@ public class DefaultSearchHashServiceImpl extends BaseServiceImpl<SearchHash>
 				"Update of SearchHash entries is not allowed !!!");
 	}
 
-	public SearchHash updateFields(SearchHash fieldSet) throws Exception {
-		throw new UnsupportedOperationException(
-				"Update of SearchHash entries is not allowed !!!");
+	public void delete(long id) throws Exception {
+		searchHashRepository.delete(id);
+		
 	}
-
-	
 
 }
