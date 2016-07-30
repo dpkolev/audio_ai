@@ -16,7 +16,17 @@
             <artifactId>jlayer</artifactId>
             <version>1.0.1</version>
         </dependency>
-        
+        <dependency>
+            <groupId>com.googlecode.soundlibs</groupId>
+            <artifactId>tritonus-share</artifactId>
+            <version>0.3.7-3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.soundlibs</groupId>
+            <artifactId>mp3spi</artifactId>
+            <version>1.9.5-1</version>
+        </dependency>
+
         <!-- SPRING-DATA -->
         <dependency>
             <groupId>org.springframework.data</groupId>
@@ -34,7 +44,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
+
         <!-- SPRING-FRAMEWORK -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -130,7 +140,7 @@
             <artifactId>javassist</artifactId>
             <version>3.12.1.GA</version>
         </dependency>
-        
+
         <!-- CGLIB is required to process @Configuration classes -->
         <dependency>
             <groupId>cglib</groupId>
