@@ -211,9 +211,12 @@ public class AudioSample extends Player {
 			try {
 				StringBuilder sb = new StringBuilder();
 				for (int itt = 0; itt < output.getBuffer().length; itt+=2) {
-					int slot = 1044;
+					//int slot = 1044;
 					short ls = output.getBuffer()[itt];
 					short rs = output.getBuffer()[itt+1];
+					//output.getBuffer()[itt+1] = output.getBuffer()[itt]; // to MONO
+					//output.getBuffer()[itt+1] = 0; // left channel
+					//output.getBuffer()[itt] = 0; // right channel
 //					if (itt == slot) {
 //						output.getBuffer()[itt] = Short.MAX_VALUE;
 //						output.getBuffer()[itt+1] = Short.MAX_VALUE;
@@ -257,7 +260,7 @@ public class AudioSample extends Player {
 
 	public static FileWriter fr;
 
-	public static File f = new File("res/celldweller-through_the_gates.mp3");
+	public static File f = new File(AudioSample.class.getClassLoader().getResource("test1_celldweller_through_the_gates.mp3").getFile());
 
 	public static void main(String[] args) throws Exception {
 
