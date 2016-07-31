@@ -1,4 +1,4 @@
-package org.sound.audio;
+package org.sound.audio.fft;
 
 /******************************************************************************
  *  Compilation:  javac FFT.java
