@@ -33,8 +33,13 @@ public class FFTExecutor {
 	}
 	
 	
-	public static final void printFFT (Complex[][] toPrint, String fileName) throws FileNotFoundException {
-		PrintWriter pw = new PrintWriter(new File(fileName));
+	public static final void printFFT (Complex[][] toPrint, String fileName) {
+		PrintWriter pw = null;
+		try {
+			pw = new PrintWriter(new File(fileName));
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
 		for (Complex[] line : toPrint) {
 			pw.println(Arrays.toString(line));
 		}

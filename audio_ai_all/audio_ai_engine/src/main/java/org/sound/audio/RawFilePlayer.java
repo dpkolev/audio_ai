@@ -1,10 +1,8 @@
 package org.sound.audio;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.util.Arrays;
 
 import javax.sound.sampled.AudioFormat;
@@ -14,31 +12,30 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-import org.sound.audio.fftparser.FFTExecutor;
-
 import com.test.TestPlayRaw;
 
 public class RawFilePlayer {
-	private static final String DEFAULT_FILE_TO_PLAY = "test3_orjan_nilsen_so_long_radio.mp3"; // "test4_blue_stahli_anti_you.wav";
+	public static final String DEFAULT_FILE_TO_PLAY = "test3_orjan_nilsen_so_long_radio.mp3"; // "test4_blue_stahli_anti_you.wav";
 
 	private static final String OUT_RAW = "out_raw.txt";
 
 	public static final int OUT_BUFFER_SIZE = 2 * 1024; // 2 * 1152;
-	
+
 	private String filename;
 
 	private Channel leftChannel;
 
 	private Channel rightChannel;
-	
+
 	private boolean isPlayed;
-	
+
 	public RawFilePlayer(String filename) {
 		this.filename = filename;
 	}
-	
+
 	public RawFilePlayer() {
-		this(DEFAULT_FILE_TO_PLAY);
+		this(TestPlayRaw.class.getClassLoader()
+				.getResource(DEFAULT_FILE_TO_PLAY).getFile());
 	}
 
 	public String getFilename() {
@@ -56,7 +53,7 @@ public class RawFilePlayer {
 	public boolean isPlayed() {
 		return isPlayed;
 	}
-	
+
 	public void playback() {
 		try {
 			File file = new File(this.filename);
@@ -165,23 +162,6 @@ public class RawFilePlayer {
 		res = (SourceDataLine) AudioSystem.getLine(info);
 		res.open(audioFormat);
 		return res;
-	}
-
-	public static void main(String[] args) {
-		URL url = TestPlayRaw.class.getClassLoader()
-				.getResource(DEFAULT_FILE_TO_PLAY);
-		if (url == null) {
-			System.err.println(
-					"No stream found !!! Add resource from src/test/resources");
-		} else {
-			RawFilePlayer player = new RawFilePlayer(url.getFile());
-			try {
-				FFTExecutor.printFFT(FFTExecutor.transform(player), "fft.txt");
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 	}
 
 }
