@@ -34,7 +34,7 @@ public class RawFilePlayer {
 	}
 
 	public RawFilePlayer() {
-		this(TestPlayRaw.class.getClassLoader()
+		this(RawFilePlayer.class.getClassLoader()
 				.getResource(DEFAULT_FILE_TO_PLAY).getFile());
 	}
 
