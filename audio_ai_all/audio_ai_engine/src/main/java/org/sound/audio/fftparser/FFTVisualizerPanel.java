@@ -1,20 +1,19 @@
 package org.sound.audio.fftparser;
 
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 
-import javax.crypto.spec.SecretKeySpec;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.imageio.ImageIO;
 
 import org.sound.audio.fft.Complex;
 
-class FFTVisualizerPanel extends JPanel {
-	 
+public class FFTVisualizerPanel {
+
 	private static final int PIXEL_SIZE = 2;
-	
+
 	private Complex[][] fft;
 	private boolean logModeEnabled;
 
@@ -28,50 +27,68 @@ class FFTVisualizerPanel extends JPanel {
 		this(fft, true);
 	}
 
-	private void visualize(Graphics g2d) {
+	public void visualize() {
 		int blockSizeX = PIXEL_SIZE;
 		int blockSizeY = PIXEL_SIZE;
-
 		int frameCount = fft.length;
+		int frameWindowSize = fft[0].length;
+		// BufferedImage outImage = new
+		// BufferedImage(frameWindowSize*blockSizeX, frameCount*blockSizeY,
+		// BufferedImage.TYPE_INT_RGB);
+		BufferedImage outImage = new BufferedImage(frameCount, calculateImageHeight(frameWindowSize, this.logModeEnabled),
+				BufferedImage.TYPE_INT_RGB);
+		System.out.println(String.format("Size will be %d to %d picture", outImage.getWidth(), outImage.getHeight()));
 		for (int frame = 0; frame < frameCount; frame++) {
-			int frameWindowSize = fft[frame].length;
-			int freq = 0;
-			for (int frSample = 0; frSample < frameWindowSize; frSample++) {
-				// To get the magnitude of the sound at a given frequency slice
-				// get the abs() from the complex number.
-				// In this case I use Math.log to get a more managable number
-				// (used for color)
-				double magnitude = Math.log(fft[frame][freq].abs() + 1);
+			int currHeight = outImage.getHeight();
+			for (int frSample = 0; frSample < frameWindowSize;) {
+				
+				double preMagnitude = fft[frame][frSample].abs();
+				double magnitude = Math.log(preMagnitude + 1); /// Math.log(2);
 				// The more blue in the color the more intensity for a given
 				// frequency point:
-				g2d.setColor(new Color(0, (int) magnitude * 10,
-						(int) magnitude * 20));
-				// Fill:
-				g2d.fillRect(frame * blockSizeX,
-						(frameWindowSize - frSample) * blockSizeY, blockSizeX,
-						blockSizeY);
+				outImage.setRGB(frame, --currHeight, new Color(0, (int) (magnitude * 10),
+								(int) (magnitude * 20)).getRGB());
+				// g2d.setColor(new Color(0, (int) magnitude * 10,
+				// (int) magnitude * 20));
+				// // Fill:
+				// g2d.fillRect(frame * blockSizeX,
+				// (frameWindowSize - frSample) * blockSizeY, blockSizeX,
+				// blockSizeY);
 
 				// I used a improviced logarithmic scale and normal scale:
-				if (this.logModeEnabled
-						&& (Math.log10(frSample) * Math.log10(frSample)) > 1) {
-					freq += (int) (Math.log10(frSample) * Math.log10(frSample));
-				} else {
-					freq++;
-				}
+				frSample += getNextOffset(frSample, this.logModeEnabled);
+				
 			}
 		}
-		setSize(fft[0].length * blockSizeX, fft.length * blockSizeY);
+		try {
+			ImageIO.write(outImage, "jpeg",
+					new File("Freq_" + new Date().getTime() + ".jpeg"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		new PopUpJFrame(outImage, "Frequencies");
 	}
-
-	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
-		visualize((Graphics2D) g);
+	
+	private int getNextOffset(int current, boolean isLogScale) {
+		int offset = (int)Math.log10(current + 1);
+		if (isLogScale && offset > 0) {
+			return offset*offset;
+		} else {
+			return 1;
+		}
 	}
-
-	@Override
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		visualize((Graphics2D) g);
+	
+	private int calculateImageHeight(int frameWindowSize, boolean isLogScale) {
+		if (!isLogScale) {
+			return frameWindowSize;
+		} else {
+			int height = 0;
+			int accumulator = 0;
+			while (accumulator < frameWindowSize) {
+				height++;
+				accumulator += getNextOffset(accumulator, true);
+			}
+			return height;
+		}
 	}
 }

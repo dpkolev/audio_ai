@@ -30,7 +30,8 @@ public class RawFilePlayer {
 	private boolean isPlayed;
 
 	public RawFilePlayer(String filename) {
-		this.filename = filename;
+		this.filename = RawFilePlayer.class.getClassLoader()
+				.getResource(filename).getFile();
 	}
 
 	public RawFilePlayer() {
