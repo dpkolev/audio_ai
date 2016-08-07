@@ -149,8 +149,8 @@ public class RawFilePlayer {
 				// nBytesWritten = line.write(data, 0, nBytesRead);
 				// }
 			}
-			//this.leftChannel.recompactForFourierDoubleFrame();
-			//this.rightChannel.recompactForFourierDoubleFrame();
+			this.leftChannel.recompactForFourierDoubleFrame();
+			this.rightChannel.recompactForFourierDoubleFrame();
 			this.leftChannel.serializeToFile("LEFT_sample.txt");
 			this.rightChannel.serializeToFile("RIGHT_sample.txt");
 			// Stop

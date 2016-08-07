@@ -16,7 +16,7 @@ public class Main {
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				FFTVisualizerPanel panel = new FFTVisualizerPanel(fft, false);
+				FFTVisualizerPanel panel = new FFTVisualizerPanel(fft, true);
 				panel.visualize();
 				panel.visualizeScaled(false,512);
 				//panel.visualizeFrame(56, 256, false);

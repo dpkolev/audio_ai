@@ -44,21 +44,23 @@ public class FFTVisualizerPanel {
 		Graphics g = outImage.getGraphics();
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, outImage.getWidth(), outImage.getHeight());
-		double maxFFTMagn = 0;
-		for (Complex[] dArray : fft) {
-			for (Complex d : dArray) {
-				double magn = Math.log(d.abs()+1);
-				if (maxFFTMagn < magn) {
-					maxFFTMagn = magn;
-				}
-			}
-		}
-		double colorScaler = 255/maxFFTMagn;
+//		double maxFFTMagn = 0;
+//		for (Complex[] dArray : fft) {
+//			for (Complex d : dArray) {
+//				//double magn = Math.log10(d.abs() + 1);
+//				double magn = 10*Math.log10(Math.pow(d.abs(), 2)+1);
+//				if (maxFFTMagn < magn) {
+//					maxFFTMagn = magn;
+//				}
+//			}
+//		}
+//		double colorScaler = 255/maxFFTMagn;
 		for (int frame = 0; frame < frameCount; frame++) {
 			int currHeight = outImage.getHeight()-1;
 			for (int frSample = 0; frSample < frameWindowSize;) {
-				double magnitude = Math.log(fft[frame][frSample].abs() + 1);
-				int rgbPart = (int) (magnitude * colorScaler);
+				//double magnitude = Math.log(fft[frame][frSample].abs() + 1);
+				double magnitude = 10*Math.log10(Math.pow(fft[frame][frSample].abs(), 2)+1);
+				int rgbPart = (int) (magnitude * 2);
 				rgbPart = rgbPart < 256 ? rgbPart : 255; 
 				rgbPart = 255 - rgbPart;
 				int rgb = new Color(rgbPart, rgbPart, rgbPart).getRGB();
@@ -80,7 +82,7 @@ public class FFTVisualizerPanel {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new PopUpJFrame(outImage, "Frequencies");
+		//new PopUpJFrame(outImage, "Frequencies");
 	}
 	
 	
@@ -131,7 +133,7 @@ public class FFTVisualizerPanel {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new PopUpJFrame(outImage, "Frequencies");
+		//new PopUpJFrame(outImage, "Frequencies");
 	}
 	
 	

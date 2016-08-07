@@ -58,7 +58,7 @@ public class FFTExecutor {
 				}
 			}
 			Complex[] fftFrame = FFT.fft(frameForFFT);
-			results[frameNumber] = new Complex[fftFrame.length/2];
+			results[frameNumber] = new Complex[fftFrame.length/4];
 			System.arraycopy(fftFrame, 0, results[frameNumber], 0, results[frameNumber].length);
 		}
 		return results;
