@@ -25,9 +25,41 @@ public class FFTExecutor {
 			Byte[] frame = channelData.get(frameNumber);
 			Complex[] frameForFFT = new Complex[frameSize];
 			for (int i = 0; i < frameSize; i++) {
-				frameForFFT[i] = new Complex(frame[i], 0);
+				try {
+					frameForFFT[i] = new Complex(frame[i], 0);
+				} catch (Throwable e) {
+					System.out.println("For i = " + i);
+					throw e;
+				}
 			}
 			results[frameNumber] = FFT.fft(frameForFFT);
+		}
+		return results;
+	}
+	
+	
+	public static final Complex[][] transformToRealOnly(RawFilePlayer player) {
+		if (!player.isPlayed()) {
+			player.playback();
+		}
+		Channel ch = player.getLeftChannel();
+		int frameSize = ch.getFrameSize();
+		List<Byte[]> channelData = ch.getChannelData();
+		Complex[][] results = new Complex[channelData.size()][];
+		for (int frameNumber = 0; frameNumber < channelData.size(); frameNumber++) {
+			Byte[] frame = channelData.get(frameNumber);
+			Complex[] frameForFFT = new Complex[frameSize];
+			for (int i = 0; i < frameSize; i++) {
+				try {
+					frameForFFT[i] = new Complex(frame[i], 0);
+				} catch (Throwable e) {
+					System.out.println("For i = " + i);
+					throw e;
+				}
+			}
+			Complex[] fftFrame = FFT.fft(frameForFFT);
+			results[frameNumber] = new Complex[fftFrame.length/2];
+			System.arraycopy(fftFrame, 0, results[frameNumber], 0, results[frameNumber].length);
 		}
 		return results;
 	}

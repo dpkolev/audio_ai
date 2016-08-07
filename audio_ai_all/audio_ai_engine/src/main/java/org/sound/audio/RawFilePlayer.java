@@ -12,7 +12,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-import com.test.TestPlayRaw;
+import org.sound.audio.main.Sample;
 
 public class RawFilePlayer {
 	public static final String DEFAULT_FILE_TO_PLAY = "test3_orjan_nilsen_so_long_radio.mp3"; // "test4_blue_stahli_anti_you.wav";
@@ -20,7 +20,7 @@ public class RawFilePlayer {
 	private static final String OUT_RAW = "out_raw.txt";
 
 	public static final int OUT_BUFFER_SIZE = 2 * 1024; // 2 * 1152;
-
+	
 	private String filename;
 
 	private Channel leftChannel;
@@ -32,6 +32,11 @@ public class RawFilePlayer {
 	public RawFilePlayer(String filename) {
 		this.filename = RawFilePlayer.class.getClassLoader()
 				.getResource(filename).getFile();
+		try {
+			Sample.getDurationWithMp3Spi(new File(this.filename));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public RawFilePlayer() {
@@ -94,8 +99,7 @@ public class RawFilePlayer {
 		int frameSize = targetFormat.getFrameSize();
 		int audioChannels = targetFormat.getChannels();
 		PrintWriter pw = new PrintWriter(new File(OUT_RAW));
-		byte[] data = new byte[audioChannels * OUT_BUFFER_SIZE];// new
-																// byte[4096];
+		byte[] data = new byte[audioChannels * OUT_BUFFER_SIZE];// new byte[4096];
 		System.out.println("FRAMESIZE IS: " + frameSize);
 		System.out.println("AUDIO CHANNELS ARE: " + audioChannels);
 		SourceDataLine line = getLine(targetFormat);
@@ -145,6 +149,8 @@ public class RawFilePlayer {
 				// nBytesWritten = line.write(data, 0, nBytesRead);
 				// }
 			}
+			//this.leftChannel.recompactForFourierDoubleFrame();
+			//this.rightChannel.recompactForFourierDoubleFrame();
 			this.leftChannel.serializeToFile("LEFT_sample.txt");
 			this.rightChannel.serializeToFile("RIGHT_sample.txt");
 			// Stop
@@ -158,8 +164,7 @@ public class RawFilePlayer {
 	private SourceDataLine getLine(AudioFormat audioFormat)
 			throws LineUnavailableException {
 		SourceDataLine res = null;
-		DataLine.Info info = new DataLine.Info(SourceDataLine.class,
-				audioFormat);
+		DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
 		res = (SourceDataLine) AudioSystem.getLine(info);
 		res.open(audioFormat);
 		return res;
