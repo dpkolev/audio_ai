@@ -1,4 +1,4 @@
-package org.sound.audio.fftparser;
+package org.sound.audio.grouping;
 
 import java.util.HashMap;
 import java.util.Map;

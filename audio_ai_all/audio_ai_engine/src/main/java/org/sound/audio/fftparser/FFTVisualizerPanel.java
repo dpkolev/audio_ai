@@ -10,8 +10,11 @@ import java.util.Date;
 import javax.imageio.ImageIO;
 
 import org.sound.audio.fft.Complex;
+import org.sound.audio.grouping.BucketDiscretization;
 
 public class FFTVisualizerPanel {
+
+	private static final double SPECTROGRAM_THRESHOLD = 0.65*255;
 
 	private static final int PIXEL_SIZE = 2;
 
@@ -21,11 +24,11 @@ public class FFTVisualizerPanel {
 	
 	private int lastBucketCount;
 	
-	private boolean logModeEnabled;
+	private boolean isLogScalePictureGeneration;
 
-	public FFTVisualizerPanel(Complex[][] fft, boolean logModeEnabled) {
+	public FFTVisualizerPanel(Complex[][] fft, boolean isLogScalePictureGeneration) {
 		this.fft = fft;
-		this.logModeEnabled = logModeEnabled;
+		this.isLogScalePictureGeneration = isLogScalePictureGeneration;
 
 	}
 
@@ -39,7 +42,7 @@ public class FFTVisualizerPanel {
 		int frameCount = fft.length;
 		int frameWindowSize = fft[0].length;
 		BufferedImage outImage = 
-				new BufferedImage(frameCount*PIXEL_SIZE, calcImageHeight(frameWindowSize, this.logModeEnabled)*PIXEL_SIZE, BufferedImage.TYPE_INT_RGB);
+				new BufferedImage(frameCount*PIXEL_SIZE, calcImageHeight(frameWindowSize, this.isLogScalePictureGeneration)*PIXEL_SIZE, BufferedImage.TYPE_INT_RGB);
 		System.out.println(String.format("Size will be %d to %d px", outImage.getWidth(), outImage.getHeight()));
 		Graphics g = outImage.getGraphics();
 		g.setColor(Color.WHITE);
@@ -73,7 +76,7 @@ public class FFTVisualizerPanel {
 //				outImage.setRGB(frame, --currHeight, new Color((int) (magnitude * 15), (int) (magnitude * 15),
 //						(int) (magnitude * 15)).getRGB());
 				// Improviced logarithmic scale and normal scale:
-				frSample += getNextOffset(frSample, this.logModeEnabled);
+				frSample += getNextOffset(frSample, this.isLogScalePictureGeneration);
 			}
 		}
 		try {
@@ -86,7 +89,7 @@ public class FFTVisualizerPanel {
 	}
 	
 	
-	public void visualizeScaled(boolean logColorScale, int bucketCount) {
+	public void visualizeScaled(int bucketCount, boolean isLogColorScale) {
 		int blockSizeX = PIXEL_SIZE;
 		int blockSizeY = PIXEL_SIZE;
 		double[][] magnitudeRefFFT = getMagnitudeScaledFFT(bucketCount);
@@ -102,21 +105,23 @@ public class FFTVisualizerPanel {
 				BufferedImage.TYPE_INT_RGB);
 		System.out.println(String.format("Size will be %d to %d picture", outImage.getWidth(), outImage.getHeight()));
 		Graphics g = outImage.getGraphics();
-		g.setColor(Color.WHITE);
+		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, outImage.getWidth(), outImage.getHeight());
 		double colorScaler = (255/maxFFT);
-		if (logColorScale) {
+		if (isLogColorScale) {
 			colorScaler = 255/log2(maxFFT+1);
 		}
+		System.out.println("Selected color scaler is " + colorScaler);
 		for (int frame = 0; frame < frameCount; frame++) {
 			int currHeight = outImage.getHeight() - 1;
 			for (int frSample = 0; frSample < frameWindowSize; frSample++) {
 				int color = 0;
-				if (logColorScale) {
-					color = 255 - (int)(((int)log2(magnitudeRefFFT[frame][frSample]+1)*colorScaler));
+				if (isLogColorScale) {
+					color = (int)(((int)log2(magnitudeRefFFT[frame][frSample]+1)*colorScaler));
 				} else {
-					color = 255 - (int)(magnitudeRefFFT[frame][frSample]*colorScaler);
+					color = (int)(magnitudeRefFFT[frame][frSample]*colorScaler);
 				}
+				//if (color < SPECTROGRAM_THRESHOLD) {color = 0;}
 				int rgb = new Color(color, color, color).getRGB();
 				for (int x = 0; x < blockSizeX; x++) {
 					for (int y = 0; y < blockSizeY; y++) {
