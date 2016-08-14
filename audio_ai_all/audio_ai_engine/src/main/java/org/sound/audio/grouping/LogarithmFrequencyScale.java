@@ -39,7 +39,7 @@ public class LogarithmFrequencyScale extends FrequencyScale {
 
 	public static void main(String[] args) {
 		System.out.println(Arrays.toString(
-				new LogarithmFrequencyScale(48, 16, 4096).getGroupingLimits()));
+				new LogarithmFrequencyScale(16, 1, 4096).getGroupingLimits()));
 	}
 
 }

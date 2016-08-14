@@ -30,7 +30,7 @@ public class LinearFrequencyScale extends FrequencyScale {
 		System.out.println(groupDivisionRemainer);
 		double moduleHolder = 0;
 		for (int currGroup = 1; currGroup < groups; currGroup++) {
-			groupLimits[currGroup] = groupLimits[currGroup - 1] + groupSize;
+			groupLimits[currGroup] = lowerLimit + currGroup*groupSize;
 			moduleHolder += groupDivisionRemainer;
 			if (moduleHolder > 1) {
 				groupLimits[currGroup] = groupLimits[currGroup] + 1;

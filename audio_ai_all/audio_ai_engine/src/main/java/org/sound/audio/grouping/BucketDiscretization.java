@@ -1,20 +1,20 @@
 package org.sound.audio.grouping;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.sound.audio.fft.Complex;
+import static org.sound.audio.grouping.Heuristics.*;
 
 public class BucketDiscretization {
-	
-	public static double[][] discretizeByBiggest(Complex[][] fftMatrix, int targetBucketSize) {
+
+	public static double[][] discretizeByBiggest(Complex[][] fftMatrix,
+			int targetBucketSize) {
 		return discretize(fftMatrix, targetBucketSize, HEURISTIC.BIGGEST);
 	}
-	
-	public static double[][] discretizeByMean(Complex[][] fftMatrix, int targetBucketSize) {
+
+	public static double[][] discretizeByMean(Complex[][] fftMatrix,
+			int targetBucketSize) {
 		return discretize(fftMatrix, targetBucketSize, HEURISTIC.MEAN);
 	}
-	
+
 	public static double[][] discretizeByMedianValue(Complex[][] fftMatrix,
 			int targetBucketSize) {
 		return discretize(fftMatrix, targetBucketSize, HEURISTIC.MEDIAN);
@@ -33,65 +33,19 @@ public class BucketDiscretization {
 		return scaledFFT;
 	}
 
-	private static double[] calculate(Complex[] fftRow, int scaleFactor, int targetBucketSize, HEURISTIC heuristic) {
+	private static double[] calculate(Complex[] fftRow, int scaleFactor,
+			int targetBucketSize, HEURISTIC heuristic) {
 		double[] result = new double[targetBucketSize];
 		for (int bucket = 0; bucket < targetBucketSize; bucket++) {
-			result[bucket] = calculateSingle(fftRow, bucket * scaleFactor, (bucket + 1) * scaleFactor, heuristic);
+			result[bucket] = calculateSingle(fftRow, bucket * scaleFactor,
+					(bucket + 1) * scaleFactor, heuristic);
 		}
 		return result;
 	}
 
-	private static double calculateSingle(Complex[] fftRow, int start, int end, HEURISTIC heuristic) {
-		return heuristicImpl.get(heuristic).heuristicCalculation(fftRow, start, (end < fftRow.length) ? end : fftRow.length);
-	}
-
-	//HERE BE DRAGONS ...
-	
-	public static interface HeuristicCalculation {
-		double heuristicCalculation(Complex[] data, int start, int end);
-	}
-
-	public static enum HEURISTIC {
-		BIGGEST, MEDIAN, MEAN
-	}
-	
-	private static final Map<HEURISTIC, HeuristicCalculation> heuristicImpl = new HashMap<HEURISTIC, HeuristicCalculation>();
-
-	static {
-		heuristicImpl.put(HEURISTIC.BIGGEST, new HeuristicCalculation() {
-
-			@Override
-			public double heuristicCalculation(Complex[] data, int start,
-					int end) {
-				double biggest = data[start].abs();
-				for (int i = start + 1; i < end; i++) {
-					double current = data[i].abs();
-					if (biggest < current) {
-						biggest = current;
-					}
-				}
-				return biggest;
-			}
-		});
-
-		heuristicImpl.put(HEURISTIC.MEAN, new HeuristicCalculation() {
-
-			@Override
-			public double heuristicCalculation(Complex[] data, int start, int end) {
-				double sum = 0.0;
-				for (int i = start; i < end; i++) {
-					sum += data[i].abs();
-				}
-				return sum/(end-start);
-			}
-		});
-		
-		heuristicImpl.put(HEURISTIC.MEDIAN, new HeuristicCalculation() {
-
-			@Override
-			public double heuristicCalculation(Complex[] data, int start, int end) {
-				return data[(start+end)/2].abs();
-			}
-		});
+	private static double calculateSingle(Complex[] fftRow, int start, int end,
+			HEURISTIC heuristic) {
+		return HEURISTICS_IMPL.get(heuristic).heuristicCalculation(fftRow, start,
+				(end < fftRow.length) ? end : fftRow.length);
 	}
 }
