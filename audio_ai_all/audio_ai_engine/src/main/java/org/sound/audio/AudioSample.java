@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -209,11 +210,17 @@ public class AudioSample extends Player {
 			SampleBuffer output = (SampleBuffer) decoder.decodeFrame(h,
 					bitstream);
 			try {
-				StringBuilder sb = new StringBuilder();
+				byte[] left = new byte[output.getBuffer().length];
+				byte[] right = new byte[output.getBuffer().length];
+				int lIndex =0 , rIndex = 0;
 				for (int itt = 0; itt < output.getBuffer().length; itt+=2) {
 					//int slot = 1044;
 					short ls = output.getBuffer()[itt];
 					short rs = output.getBuffer()[itt+1];
+					left[lIndex++] = (byte)ls;
+					left[lIndex++] = (byte)(ls>>>8);
+					right[rIndex++] = (byte)rs;
+					right[rIndex++] = (byte)(rs>>>8);
 					//output.getBuffer()[itt+1] = output.getBuffer()[itt]; // to MONO
 					//output.getBuffer()[itt+1] = 0; // left channel
 					//output.getBuffer()[itt] = 0; // right channel
@@ -224,24 +231,21 @@ public class AudioSample extends Player {
 //						output.getBuffer()[itt] = 0;
 //						output.getBuffer()[itt+1] = 0;
 //					}
-					sb.append("(").append(ls).append("|").append(rs).append(")");
 				}
-				String printStr = String.format("{%d}{%d} %s \n",
-						output.getBufferLength(), 
-						output.getBuffer().length,
-						sb.toString()); 
-				//System.out.println(printStr);
-				fr.write(printStr);
+				
+				fr.write(Arrays.toString(left));
+				fr.write("\n");
+				fr.flush();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			synchronized (this) {
-				out = audio;
-				if (out != null) {
-					out.write(output.getBuffer(), 0, output.getBufferLength());
-				}
-			}
+//			synchronized (this) {
+//				out = audio;
+//				if (out != null) {
+//					out.write(output.getBuffer(), 0, output.getBufferLength());
+//				}
+//			}
 
 			bitstream.closeFrame();
 		} catch (RuntimeException ex) {
@@ -260,8 +264,9 @@ public class AudioSample extends Player {
 
 	public static FileWriter fr;
 
-	public static File f = new File(AudioSample.class.getClassLoader().getResource("test1_celldweller_through_the_gates.mp3").getFile());
-
+	//public static File f = new File(AudioSample.class.getClassLoader().getResource("test1_celldweller_through_the_gates.mp3").getFile());
+	public static File f = new File(AudioSample.class.getClassLoader().getResource("test_300_Hz_Sine_Wave_Sound_Frequency_Tone.mp3").getFile());
+	
 	public static void main(String[] args) throws Exception {
 
 		System.out.println(AudioSystem.isLineSupported(Port.Info.SPEAKER));

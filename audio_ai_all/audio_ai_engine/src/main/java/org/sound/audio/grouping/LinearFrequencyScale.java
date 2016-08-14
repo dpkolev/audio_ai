@@ -2,12 +2,20 @@ package org.sound.audio.grouping;
 
 import java.util.Arrays;
 
-public class LinearFrequencyScale implements ScalableGrouping {
+public class LinearFrequencyScale extends FrequencyScale {
 
 	private static final int[] DEFAULT = new int[]{0};
 
+	public LinearFrequencyScale(int groups, int lowerLimit,
+			int upperLimit) {
+		super(groups, lowerLimit, upperLimit);
+	}
+
 	@Override
-	public int[] getGroupingLimits(int groups, int lowerLimit, int upperLimit) {
+	public int[] getGroupingLimits() {
+		int lowerLimit = getLowerLimit();
+		int upperLimit = getUpperLimit();
+		int groups = getGroups();
 		if (lowerLimit < 0 || lowerLimit >= upperLimit || groups < 1) {
 			return DEFAULT;
 		}
@@ -35,7 +43,6 @@ public class LinearFrequencyScale implements ScalableGrouping {
 
 	public static void main(String[] args) {
 		System.out.println(Arrays.toString(
-				new LinearFrequencyScale().getGroupingLimits(10, 5, 413)));
+				new LinearFrequencyScale(10, 5, 413).getGroupingLimits()));
 	}
-
 }

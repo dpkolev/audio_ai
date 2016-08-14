@@ -52,7 +52,7 @@ public class Channel {
 		}
 	}
 	public void serializeToFile(String fileName) throws FileNotFoundException {
-		PrintWriter pw = new PrintWriter(new File(fileName));
+		PrintWriter pw = new PrintWriter(new File(getChannel() + "_" +fileName));
 		for (Byte[] b : getChannelData()) {
 			pw.println(Arrays.toString(b));
 		}
@@ -65,7 +65,7 @@ public class Channel {
 			return;
 		}
 		int itterations = WINDOW_SIZE / channelData.get(0).length;
-		System.out.println("recompactForFourierDoubleFrame");
+		System.out.println("recompactForFourierDoubleFrame - " + channel);
 		for (int itteration = 1; itteration < itterations; itteration++) {
 			int dataSize = channelData.size();
 			System.out.println("Current channel size: " + dataSize);

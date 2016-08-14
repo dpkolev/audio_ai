@@ -18,7 +18,7 @@ public class FFTVisualizerPanel {
 
 	private static final int PIXEL_SIZE = 2;
 
-	private Complex[][] fft;
+	private FFTAudioInfo fftAudioInfo;
 	
 	private double[][] magnitudeScaledFFT;
 	
@@ -27,7 +27,7 @@ public class FFTVisualizerPanel {
 	private boolean isLogScalePictureGeneration;
 
 	public FFTVisualizerPanel(Complex[][] fft, boolean isLogScalePictureGeneration) {
-		this.fft = fft;
+		this.fftAudioInfo = new FFTAudioInfo(fft);
 		this.isLogScalePictureGeneration = isLogScalePictureGeneration;
 
 	}
@@ -39,8 +39,9 @@ public class FFTVisualizerPanel {
 	public void visualize() {
 		int blockSizeX = PIXEL_SIZE;
 		int blockSizeY = PIXEL_SIZE;
-		int frameCount = fft.length;
-		int frameWindowSize = fft[0].length;
+		double[][] magnitudeMap = fftAudioInfo.getMagnitudeMap();
+		int frameCount = magnitudeMap.length;
+		int frameWindowSize = magnitudeMap[0].length;
 		BufferedImage outImage = 
 				new BufferedImage(frameCount*PIXEL_SIZE, calcImageHeight(frameWindowSize, this.isLogScalePictureGeneration)*PIXEL_SIZE, BufferedImage.TYPE_INT_RGB);
 		System.out.println(String.format("Size will be %d to %d px", outImage.getWidth(), outImage.getHeight()));
@@ -62,7 +63,7 @@ public class FFTVisualizerPanel {
 			int currHeight = outImage.getHeight()-1;
 			for (int frSample = 0; frSample < frameWindowSize;) {
 				//double magnitude = Math.log(fft[frame][frSample].abs() + 1);
-				double magnitude = 10*Math.log10(Math.pow(fft[frame][frSample].abs(), 2)+1);
+				double magnitude = 10*Math.log10(Math.pow(magnitudeMap[frame][frSample], 2)+1);
 				int rgbPart = (int) (magnitude * 2);
 				rgbPart = rgbPart < 256 ? rgbPart : 255; 
 				rgbPart = 255 - rgbPart;
@@ -230,7 +231,7 @@ public class FFTVisualizerPanel {
 
 	public double[][] getMagnitudeScaledFFT(int bucketCount) {
 		if (magnitudeScaledFFT == null || lastBucketCount != bucketCount) {
-			magnitudeScaledFFT = BucketDiscretization.discretizeByMean(fft, bucketCount, false);
+			magnitudeScaledFFT = BucketDiscretization.discretizeByMean(fftAudioInfo.getFft(), bucketCount);
 		}
 		return magnitudeScaledFFT;
 	}

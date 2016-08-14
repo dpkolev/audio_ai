@@ -151,8 +151,8 @@ public class RawFilePlayer {
 			}
 			this.leftChannel.recompactForFourierDoubleFrame();
 			this.rightChannel.recompactForFourierDoubleFrame();
-			this.leftChannel.serializeToFile("LEFT_sample.txt");
-			this.rightChannel.serializeToFile("RIGHT_sample.txt");
+			this.leftChannel.serializeToFile("sample.txt");
+			this.rightChannel.serializeToFile("sample.txt");
 			// Stop
 			line.drain();
 			line.stop();
