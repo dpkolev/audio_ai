@@ -25,7 +25,7 @@ public class Main {
 				FFTVisualizerPanel panel = new FFTVisualizerPanel(fft, false);
 				panel.visualize();
 				panel.visualizeScaled(512, false);
-				//panel.visualizeFrame(489, 512, false);
+				panel.visualizeFrame(800, 512, false);
 			}
 		});
 	}

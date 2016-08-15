@@ -26,14 +26,17 @@ public class KeyPointsExtractor {
 		int bucketCount = limitToNthBucket == 0
 				? groupingFactor.getGroups()
 				: limitToNthBucket;
+		bucketCount = Math.min(bucketCount, groupingFactor.getGroups());
+		System.out.printf("Executing for %d buckets\n", bucketCount);
 		for (int resultLine = 0; resultLine < magnitudeMap.length; resultLine++) {
 			result[resultLine] = new int[bucketCount];
 		}
 		int[] scales = groupingFactor.getGroupingLimits();
+		System.out.println("Scaling is : " + Arrays.toString(scales));
 		HeuristicCalculation calc = HEURISTICS_IMPL.get(HEURISTIC.BIGGEST);
 		for (int magnitudeLine = 0; magnitudeLine < magnitudeMap.length; magnitudeLine++) {
 			// Remember - scales  are always group + 1;
-			for (int bucket = 0; bucket < bucketCount - 1; bucket++) {
+			for (int bucket = 0; bucket < bucketCount; bucket++) {
 				result[magnitudeLine][bucket] = calc.heuristicCalculationIndex(
 						magnitudeMap[magnitudeLine], 
 						scales[bucket],
@@ -45,15 +48,23 @@ public class KeyPointsExtractor {
 	
 	
 	public static void main(String[] args) {
-		int MAX = 256;
-		double[][] magnitudes = new double[MAX][MAX];
-		for (int i = 0; i < MAX; i++) {
+		int MAX = 32;
+		double[][] magnitudes = new double[MAX/4][MAX];
+		for (int i = 0; i < MAX/4; i++) {
 			for (int j = 0; j < MAX; j++) {
-				magnitudes[i][j] = i*MAX + j;
+				magnitudes[i][j] = Math.ceil(i*MAX*Math.random() + j);
 			}
 		}
+		System.out.println("Initial");
+		for (int i = 0; i < magnitudes.length; i++) {
+			for (int j = 0; j < magnitudes[i].length; j++) {
+				System.out.print(magnitudes[i][j] + " ");
+			}
+			System.out.println();
+		}
+		System.out.println("Execute");
 		FFTAudioInfo info = new FFTAudioInfo(magnitudes);
-		KeyPointsExtractor k = new KeyPointsExtractor(info, new LinearFrequencyScale(8, 0, MAX));
+		KeyPointsExtractor k = new KeyPointsExtractor(info, new LinearFrequencyScale(4, 0, 32));
 		int[][] result = k.getSignificantFrequenciesPerBucket(8);
 		for (int i = 0; i < result.length; i++) {
 			for (int j = 0; j < result[i].length; j++) {

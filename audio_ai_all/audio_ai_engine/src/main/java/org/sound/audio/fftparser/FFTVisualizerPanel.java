@@ -160,6 +160,10 @@ public class FFTVisualizerPanel {
 		} else {
 			scaler = (imageHeight-1)/maxFFT;
 		}
+		if (frame > magnitudeRefFFT.length) {
+			System.err.println("Frame is out of scope - getting middle frame instead !");
+			frame = magnitudeRefFFT.length/2;
+		}
 		int frameWindowSize = magnitudeRefFFT[frame].length;
 		
 		BufferedImage outImage = new BufferedImage(frameWindowSize*blockSizeX, imageHeight, BufferedImage.TYPE_INT_RGB);
