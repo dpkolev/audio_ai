@@ -14,8 +14,7 @@ public class KeyPointsExtractor {
 
     private FFTAudioInfo fftAudioInfo;
 
-    public KeyPointsExtractor(FFTAudioInfo fftAudioInfo,
-            FrequencyScale groupingFactor) {
+    public KeyPointsExtractor(FFTAudioInfo fftAudioInfo, FrequencyScale groupingFactor) {
         this.groupingFactor = groupingFactor;
         this.fftAudioInfo = fftAudioInfo;
     }
@@ -23,8 +22,7 @@ public class KeyPointsExtractor {
     public int[][] getSignificantFrequenciesPerBucket(int limitToNthBucket) {
         double[][] magnitudeMap = fftAudioInfo.getMagnitudeMap();
         int result[][] = new int[magnitudeMap.length][];
-        int bucketCount = limitToNthBucket <= 0 ? groupingFactor.getGroups()
-                : limitToNthBucket;
+        int bucketCount = limitToNthBucket <= 0 ? groupingFactor.getGroups() : limitToNthBucket;
         bucketCount = Math.min(bucketCount, groupingFactor.getGroups());
         System.out.printf("Executing for %d buckets\n", bucketCount);
         for (int resultLine = 0; resultLine < magnitudeMap.length; resultLine++) {
@@ -36,9 +34,8 @@ public class KeyPointsExtractor {
         for (int magnitudeLine = 0; magnitudeLine < magnitudeMap.length; magnitudeLine++) {
             // Remember - scales are always group + 1;
             for (int bucket = 0; bucket < bucketCount; bucket++) {
-                result[magnitudeLine][bucket] = calc.heuristicCalculationIndex(
-                        magnitudeMap[magnitudeLine], scales[bucket],
-                        scales[bucket + 1]);
+                result[magnitudeLine][bucket] = calc.heuristicCalculationIndex(magnitudeMap[magnitudeLine],
+                        scales[bucket], scales[bucket + 1]);
             }
         }
         return result;
@@ -48,8 +45,7 @@ public class KeyPointsExtractor {
     public int[][] getSignificantFrequenciesPerBucket() {
         return getSignificantFrequenciesPerBucket(0);
     }
-    
-    
+
     public int[][] getSignificantNBiggest(int limitTo) {
         double[][] magnitudeMap = fftAudioInfo.getMagnitudeMap();
         int[][] biggestBuckets = new int[magnitudeMap.length][];
@@ -61,8 +57,7 @@ public class KeyPointsExtractor {
 
     public int[] getSignificant(double[] magnitudes, int limitTo) {
         double[] workArray = Arrays.copyOf(magnitudes, magnitudes.length);
-        int resultSize = limitTo < magnitudes.length ? limitTo
-                : workArray.length;
+        int resultSize = limitTo < magnitudes.length ? limitTo : workArray.length;
         int[] result = new int[resultSize];
         for (int itteration = 0; itteration < resultSize; itteration++) {
             // Find current MAX;
@@ -97,8 +92,7 @@ public class KeyPointsExtractor {
         }
         System.out.println("Execute");
         FFTAudioInfo info = new FFTAudioInfo(magnitudes);
-        KeyPointsExtractor k = new KeyPointsExtractor(info,
-                new LinearFrequencyScale(4, 0, 32));
+        KeyPointsExtractor k = new KeyPointsExtractor(info, new LinearFrequencyScale(4, 0, 32));
         int[][] result = k.getSignificantFrequenciesPerBucket(8);
         for (int i = 0; i < result.length; i++) {
             for (int j = 0; j < result[i].length; j++) {
@@ -106,7 +100,7 @@ public class KeyPointsExtractor {
             }
             System.out.println();
         }
-        
+
         int[][] biggest = k.getSignificantNBiggest(4);
         System.out.println("BIGGEST: ");
         for (int i = 0; i < biggest.length; i++) {
