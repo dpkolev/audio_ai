@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import javax.management.RuntimeErrorException;
 
-public class LogarithmFrequencyScale extends FrequencyScale {
+public class LogarithmFrequencyScale extends BaseScale {
 
 	public LogarithmFrequencyScale(int groups, int lowerLimit, int upperLimit) {
 		super(groups, lowerLimit, upperLimit);
@@ -39,7 +39,7 @@ public class LogarithmFrequencyScale extends FrequencyScale {
 
 	public static void main(String[] args) {
 		System.out.println(Arrays.toString(
-				new LogarithmFrequencyScale(16, 1, 4096).getGroupingLimits()));
+				new LogarithmFrequencyScale(7, 1, 512).getGroupingLimits()));
 	}
 
 }

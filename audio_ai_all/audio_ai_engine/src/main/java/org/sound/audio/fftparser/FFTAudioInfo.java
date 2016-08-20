@@ -3,6 +3,7 @@ package org.sound.audio.fftparser;
 import org.sound.audio.RawFilePlayer;
 import org.sound.audio.fft.Complex;
 import org.sound.audio.fftparser.FFTExecutorUtil.Pair;
+import org.sound.audio.grouping.Frequency;
 
 public class FFTAudioInfo {
 

@@ -6,136 +6,104 @@ import java.util.Map;
 import org.sound.audio.fft.Complex;
 
 public class Heuristics {
-	
-	public static interface HeuristicCalculation {
-		double heuristicCalculation(Complex[] data, int start, int end);
-		double heuristicCalculation(double[] data, int start, int end);
-		int heuristicCalculationIndex(Complex[] data, int start, int end);
-		int heuristicCalculationIndex(double[] data, int start, int end);
-	}
 
-	public static enum HEURISTIC {
-		BIGGEST, MEDIAN, MEAN
-	}
+    public static interface HeuristicCalculation {
+        Frequency heuristicCalculation(Complex[] data, int start, int end);
 
-	public static final Map<HEURISTIC, HeuristicCalculation> HEURISTICS_IMPL = new HashMap<HEURISTIC, HeuristicCalculation>();
+        Frequency heuristicCalculation(double[] data, int start, int end);
 
-	static {
-		HEURISTICS_IMPL.put(HEURISTIC.BIGGEST, new HeuristicCalculation() {
+        Frequency heuristicCalculation(Frequency[] data, int start, int end);
+    }
 
-			@Override
-			public double heuristicCalculation(Complex[] data, int start,
-					int end) {
-				double biggest = data[start].abs();
-				for (int i = start + 1; i < end; i++) {
-					double current = data[i].abs();
-					if (biggest < current) {
-						biggest = current;
-					}
-				}
-				return biggest;
-			}
+    public static enum HEURISTIC {
+        BIGGEST, MEDIAN, MEAN
+    }
 
-			@Override
-			public double heuristicCalculation(double[] data, int start,
-					int end) {
-				double biggest = data[start];
-				for (int i = start + 1; i < end; i++) {
-					if (biggest < data[i]) {
-						biggest = data[i];
-					}
-				}
-				return biggest;
-			}
+    public static final Map<HEURISTIC, HeuristicCalculation> HEURISTICS_IMPL = new HashMap<HEURISTIC, HeuristicCalculation>();
 
-			@Override
-			public int heuristicCalculationIndex(Complex[] data, int start,
-					int end) {
-				int indexBiggest = start;
-				double biggest = data[start].abs();
-				for (int i = start + 1; i < end; i++) {
-					double current = data[i].abs();
-					if (biggest < current) {
-						biggest = current;
-						indexBiggest = i;
-					}
-				}
-				return indexBiggest;
-			}
+    private static double[] getMagnitudes(Complex[] data) {
+        double[] magnitudes = new double[data.length];
+        for (int frequency = 0; frequency < data.length; frequency++) {
+            magnitudes[frequency] = data[frequency].abs();
+        }
+        return magnitudes;
+    }
 
-			@Override
-			public int heuristicCalculationIndex(double[] data, int start,
-					int end) {
-				int indexBiggest = start;
-				for (int i = start + 1; i < end; i++) {
-					if (data[indexBiggest] < data[i]) {
-						indexBiggest = i;
-					}
-				}
-				return indexBiggest;
-			}
-		});
+    private static double[] getMagnitudes(Frequency[] data) {
+        double[] magnitudes = new double[data.length];
+        for (int freqBin = 0; freqBin < data.length; freqBin++) {
+            magnitudes[freqBin] = data[freqBin].magnitude;
+        }
+        return magnitudes;
+    }
 
-		HEURISTICS_IMPL.put(HEURISTIC.MEAN, new HeuristicCalculation() {
+    static {
+        HEURISTICS_IMPL.put(HEURISTIC.BIGGEST, new HeuristicCalculation() {
 
-			@Override
-			public double heuristicCalculation(Complex[] data, int start,
-					int end) {
-				double sum = 0.0;
-				for (int i = start; i < end; i++) {
-					sum += data[i].abs();
-				}
-				return sum / (end - start);
-			}
+            @Override
+            public Frequency heuristicCalculation(Complex[] data, int start, int end) {
+                return heuristicCalculation(getMagnitudes(data), start, end);
+            }
 
-			@Override
-			public double heuristicCalculation(double[] data, int start,
-					int end) {
-				double sum = 0.0;
-				for (int i = start; i < end; i++) {
-					sum += data[i];
-				}
-				return sum / (end - start);
-			}
+            @Override
+            public Frequency heuristicCalculation(Frequency[] data, int start, int end) {
+                return heuristicCalculation(getMagnitudes(data), start, end);
+            }
 
-			@Override
-			public int heuristicCalculationIndex(Complex[] data, int start,
-					int end) {
-				return (start + end) / 2;
-			}
+            @Override
+            public Frequency heuristicCalculation(double[] data, int start, int end) {
+                double biggestMagnitude = data[start];
+                int biggestFrequency = start;
+                for (int i = start + 1; i < end; i++) {
+                    if (biggestMagnitude < data[i]) {
+                        biggestMagnitude = data[i];
+                        biggestFrequency = i;
+                    }
+                }
+                return new Frequency(biggestFrequency, biggestMagnitude);
+            }
 
-			@Override
-			public int heuristicCalculationIndex(double[] data, int start,
-					int end) {
-				return (start + end) / 2;
-			}
-		});
+        });
 
-		HEURISTICS_IMPL.put(HEURISTIC.MEDIAN, new HeuristicCalculation() {
+        HEURISTICS_IMPL.put(HEURISTIC.MEAN, new HeuristicCalculation() {
 
-			@Override
-			public double heuristicCalculation(Complex[] data, int start,
-					int end) {
-				return data[(start + end) / 2].abs();
-			}
+            @Override
+            public Frequency heuristicCalculation(Complex[] data, int start, int end) {
+                return heuristicCalculation(getMagnitudes(data), start, end);
+            }
 
-			@Override
-			public double heuristicCalculation(double[] data, int start,
-					int end) {
-				return data[(start + end) / 2];
-			}
+            @Override
+            public Frequency heuristicCalculation(Frequency[] data, int start, int end) {
+                return heuristicCalculation(getMagnitudes(data), start, end);
+            }
 
-			@Override
-			public int heuristicCalculationIndex(Complex[] data, int start,
-					int end) {
-				return (start + end) / 2;
-			}
+            @Override
+            public Frequency heuristicCalculation(double[] data, int start, int end) {
+                double sum = 0.0;
+                for (int i = start; i < end; i++) {
+                    sum += data[i];
+                }
+                return new Frequency((start + end) / 2, sum / (end - start));
+            }
 
-			@Override
-			public int heuristicCalculationIndex(double[] data, int start,
-					int end) {
-				return (start + end) / 2;
-			}
-		});
-	}
+        });
+
+        HEURISTICS_IMPL.put(HEURISTIC.MEDIAN, new HeuristicCalculation() {
+
+            @Override
+            public Frequency heuristicCalculation(Frequency[] data, int start, int end) {
+                return heuristicCalculation(getMagnitudes(data), start, end);
+            }
+            
+            @Override
+            public Frequency heuristicCalculation(Complex[] data, int start, int end) {
+                return heuristicCalculation(getMagnitudes(data), start, end);
+            }
+
+            @Override
+            public Frequency heuristicCalculation(double[] data, int start, int end) {
+                return new Frequency((start + end) / 2, data[(start + end) / 2]);
+            }
+        });
+    }
 }

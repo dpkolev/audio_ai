@@ -2,7 +2,7 @@ package org.sound.audio.grouping;
 
 import java.util.Arrays;
 
-public class LinearFrequencyScale extends FrequencyScale {
+public class LinearFrequencyScale extends BaseScale {
 
 	private static final int[] DEFAULT = new int[]{0};
 
