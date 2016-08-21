@@ -39,6 +39,7 @@ public class KeyPointsExtractor {
         int[] scales = groupingFactor.getGroupingLimits();
         // TODO Debug
         System.out.println("Scaling is : " + Arrays.toString(scales));
+        System.out.println("Magnitude line length is: " + magnitudeMap[0].length);
         HeuristicCalculation calc = HEURISTICS_IMPL.get(HEURISTIC.BIGGEST);
         for (int magnitudeLine = 0; magnitudeLine < magnitudeMap.length; magnitudeLine++) {
             // Remember - scales are always group + 1;

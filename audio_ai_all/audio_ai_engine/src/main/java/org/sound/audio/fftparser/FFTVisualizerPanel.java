@@ -20,7 +20,7 @@ public class FFTVisualizerPanel {
 
 	private FFTAudioInfo fftAudioInfo;
 	
-	private double[][] magnitudeScaledFFT;
+	private double[][] binnedMagnitudeScaledFFT;
 	
 	private int lastBucketCount;
 	
@@ -234,9 +234,9 @@ public class FFTVisualizerPanel {
 	}
 
 	public double[][] getMagnitudeScaledFFT(int bucketCount) {
-		if (magnitudeScaledFFT == null || lastBucketCount != bucketCount) {
-			magnitudeScaledFFT = BucketDiscretization.discretizeByMean(fftAudioInfo.getFft(), bucketCount);
+		if (binnedMagnitudeScaledFFT == null || lastBucketCount != bucketCount) {
+		    binnedMagnitudeScaledFFT = BucketDiscretization.discretizeByMean(fftAudioInfo.getMagnitudeMap(), bucketCount);
 		}
-		return magnitudeScaledFFT;
+		return binnedMagnitudeScaledFFT;
 	}
 }

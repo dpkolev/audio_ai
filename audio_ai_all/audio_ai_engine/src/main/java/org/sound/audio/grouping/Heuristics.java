@@ -8,6 +8,10 @@ import org.sound.audio.fft.Complex;
 public class Heuristics {
 
     public static interface HeuristicCalculation {
+        /**
+         * Use the double[] implementation with pre-calculated magnitudes
+         */
+        @Deprecated
         Frequency heuristicCalculation(Complex[] data, int start, int end);
 
         Frequency heuristicCalculation(double[] data, int start, int end);
@@ -40,6 +44,10 @@ public class Heuristics {
     static {
         HEURISTICS_IMPL.put(HEURISTIC.BIGGEST, new HeuristicCalculation() {
 
+            /**
+             * Use the double[] implementation with pre-calculated magnitudes
+             */
+            @Deprecated
             @Override
             public Frequency heuristicCalculation(Complex[] data, int start, int end) {
                 return heuristicCalculation(getMagnitudes(data), start, end);
@@ -67,6 +75,10 @@ public class Heuristics {
 
         HEURISTICS_IMPL.put(HEURISTIC.MEAN, new HeuristicCalculation() {
 
+            /**
+             * Use the double[] implementation with pre-calculated magnitudes
+             */
+            @Deprecated
             @Override
             public Frequency heuristicCalculation(Complex[] data, int start, int end) {
                 return heuristicCalculation(getMagnitudes(data), start, end);
@@ -90,6 +102,10 @@ public class Heuristics {
 
         HEURISTICS_IMPL.put(HEURISTIC.MEDIAN, new HeuristicCalculation() {
 
+            /**
+             * Use the double[] implementation with pre-calculated magnitudes
+             */
+            @Deprecated
             @Override
             public Frequency heuristicCalculation(Frequency[] data, int start, int end) {
                 return heuristicCalculation(getMagnitudes(data), start, end);

@@ -13,6 +13,8 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
 import org.sound.audio.main.Sample;
+import org.sound.audio.samplingwindows.RectangularWindow;
+import org.sound.audio.samplingwindows.WindowFunction;
 
 public class RawFilePlayer {
 	public static final String DEFAULT_FILE_TO_PLAY = "test3_orjan_nilsen_so_long_radio.mp3"; // "test4_blue_stahli_anti_you.wav";
@@ -28,20 +30,27 @@ public class RawFilePlayer {
 	private Channel rightChannel;
 
 	private boolean isPlayed;
+	
+	private WindowFunction windowFunction;
+	
+	   public RawFilePlayer(String filename, Class<? extends WindowFunction> windowFunction) {
+	        this.filename = RawFilePlayer.class.getClassLoader()
+	                .getResource(filename).getFile();
+	        try {
+	            this.windowFunction = windowFunction.getConstructor(int.class).newInstance(OUT_BUFFER_SIZE);
+	            Sample.getDurationWithMp3Spi(new File(this.filename));
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	   
 
 	public RawFilePlayer(String filename) {
-		this.filename = RawFilePlayer.class.getClassLoader()
-				.getResource(filename).getFile();
-		try {
-			Sample.getDurationWithMp3Spi(new File(this.filename));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		this(filename, RectangularWindow.class);
 	}
 
 	public RawFilePlayer() {
-		this(RawFilePlayer.class.getClassLoader()
-				.getResource(DEFAULT_FILE_TO_PLAY).getFile());
+		this(DEFAULT_FILE_TO_PLAY);
 	}
 
 	public String getFilename() {
@@ -103,6 +112,7 @@ public class RawFilePlayer {
 		System.out.println("FRAMESIZE IS: " + frameSize);
 		System.out.println("AUDIO CHANNELS ARE: " + audioChannels);
 		SourceDataLine line = getLine(targetFormat);
+		double[] window = windowFunction.getWindow();
 		if (line != null) {
 			// Start
 			line.start();
@@ -126,10 +136,10 @@ public class RawFilePlayer {
 										+ frameSize);
 					}
 					for (int i = 0; i < data.length / frameSize; i++) {
-						lChannel[lIndex++] = data[frameSize * i];
-						lChannel[lIndex++] = data[frameSize * i + 1];
-						rChannel[rIndex++] = data[frameSize * i + 2];
-						rChannel[rIndex++] = data[frameSize * i + 3];
+						lChannel[lIndex++] = (byte) (data[frameSize * i]*window[i]);
+						lChannel[lIndex++] = (byte) (data[frameSize * i + 1]*window[i]);
+						rChannel[rIndex++] = (byte) (data[frameSize * i + 2]*window[i]);
+						rChannel[rIndex++] = (byte) (data[frameSize * i + 3]*window[i]);
 					}
 					this.leftChannel.getChannelData().add(lChannel);
 					this.rightChannel.getChannelData().add(rChannel);
@@ -149,8 +159,8 @@ public class RawFilePlayer {
 				// nBytesWritten = line.write(data, 0, nBytesRead);
 				// }
 			}
-			this.leftChannel.recompactForFourierDoubleFrame();
-			this.rightChannel.recompactForFourierDoubleFrame();
+			//this.leftChannel.recompactForFourierDoubleFrame();
+			//this.rightChannel.recompactForFourierDoubleFrame();
 			this.leftChannel.serializeToFile("sample.txt");
 			this.rightChannel.serializeToFile("sample.txt");
 			// Stop
